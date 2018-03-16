@@ -1,0 +1,59 @@
+<html>
+
+<head>
+  <script src="jquery.min.js"></script>
+  <script src="angular.min.js"></script>
+  <script src="angular-sanitize.min.js"></script>
+  <script src="table2json.js"></script>
+
+  <script>
+    var app = angular.module("table2jsonApp", ['ngSanitize']);
+
+    app.controller("table2jsonCtrl", function ($scope) {
+      $scope.html = "";
+      $scope.json = "";
+
+      $scope.$watch('html', function (newValue, oldValue) {
+        if(newValue !== oldValue) {
+          $scope.json = table2json(newValue);
+        }
+      });
+    });
+  </script>
+
+  <style>
+    div {
+      text-align: center;
+    }
+    textarea, div {
+      margin: auto;
+      width: 100%;
+    }
+    textarea {
+      width: 600px;
+      height: 300px;
+    }
+    table {
+      margin: auto;
+    }
+  </style>
+</head>
+
+<body ng-app="table2jsonApp">
+  <div ng-controller="table2jsonCtrl">
+    <div>
+      <h1>Insert an HTML table here</h1>
+      <textarea ng-model="html"></textarea>
+    </div>
+    <div>
+      <h1>The rendered table looks like this</h1>
+      <div ng-bind-html="html"></div>
+    </div>
+    <div>
+      <h1>The JSON for the table looks like this</h1>
+      <div>{{ json }}</div>
+    </div>
+  </div>
+</body>
+
+</html>
