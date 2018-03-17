@@ -1,13 +1,13 @@
 // Credit to ccheney on GitHub: https://gist.github.com/ccheney/4389114
 // Edits by Niwsters
 
-var table2json = function (htmlStr) { 
+var table2json = function (htmlStr, headerSelector) { 
   // Parse given HTML string to a jQuery object
   var $table = $($.parseHTML($.trim(htmlStr)));
 
   // Store all the headers to use as column names
   var headers = [];
-  $table.find('th').each(function (i, n) {
+  $table.find(headerSelector).each(function (i, n) {
     var $header = $(n);
     headers.push($header.text());
   });

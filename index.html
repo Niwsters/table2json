@@ -12,10 +12,19 @@
     app.controller("table2jsonCtrl", function ($scope) {
       $scope.html = "";
       $scope.json = "";
+      $scope.headerSelector = "thead td";
+      $scope.customHeaderSelector = "";
 
       $scope.$watch('html', function (newValue, oldValue) {
         if(newValue !== oldValue) {
-          $scope.json = table2json(newValue);
+          $scope.json = table2json(newValue, $scope.headerSelector);
+        }
+      });
+
+      $scope.$watch('headerSelector', function (newValue, oldValue) {
+        console.log(newValue);
+        if(newValue !== oldValue) {
+          $scope.json = table2json($scope.html, newValue);
         }
       });
     });
@@ -36,11 +45,31 @@
     table {
       margin: auto;
     }
+    #options {
+      width: 600px;
+      margin: auto;
+      margin-top: 10px;
+    }
+    #options ul {
+      list-style-type: none;
+      text-align: left;
+    }
   </style>
 </head>
 
 <body ng-app="table2jsonApp">
   <div ng-controller="table2jsonCtrl">
+    <div id="options">
+      <h1>Options</h1>
+      <span>Header selector (if you're unsure, just pick one until the JSON in the bottom shows up correctly):</span>
+      <form>
+        <ul>
+          <li><input type="radio" ng-model="headerSelector" value="thead td">thead td</li>
+          <li><input type="radio" ng-model="headerSelector" value="th">th</li>
+          <li><input type="radio" ng-model="headerSelector" ng-value="customHeaderSelector">custom selector: <input type="text" ng-model="customHeaderSelector"></li>
+        <ul>
+      </form>
+    </div>
     <div>
       <h1>Insert an HTML table here</h1>
       <textarea ng-model="html"></textarea>
