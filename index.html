@@ -9,29 +9,50 @@
   <script>
     var app = angular.module("table2jsonApp", ['ngSanitize']);
 
+    var indentJSON = function (str) {
+      return str.replace(/,/g, ", <br>&nbsp&nbsp")
+        .replace(/{/g,"{<br>&nbsp&nbsp")
+        .replace(/}/g,"<br>}")
+        .replace(/&nbsp&nbsp{/g, "{");
+    };
+
+    var convert = function (html, headerSelector, indent) {
+      if (indent === true) {
+        return indentJSON(table2json(html, headerSelector));
+      } else {
+        return table2json(html, headerSelector);
+      }
+    };
+
     app.controller("table2jsonCtrl", function ($scope) {
       $scope.html = "";
       $scope.json = "";
       $scope.headerSelector = "thead td";
       $scope.customHeaderSelector = "";
+      $scope.indent = true;
 
       $scope.$watch('html', function (newValue, oldValue) {
         if(newValue !== oldValue) {
-          $scope.json = table2json(newValue, $scope.headerSelector);
+          $scope.json = convert(newValue, $scope.headerSelector, $scope.indent);
         }
       });
 
       $scope.$watch('headerSelector', function (newValue, oldValue) {
-        console.log(newValue);
         if(newValue !== oldValue) {
-          $scope.json = table2json($scope.html, newValue);
+          $scope.json = convert($scope.html, newValue, $scope.indent);
+        }
+      });
+
+      $scope.$watch('indent', function (newValue, oldValue) {
+        if(newValue !== oldValue) {
+          $scope.json = convert($scope.html, $scope.headerSelector, newValue);
         }
       });
     });
   </script>
 
   <style>
-    div {
+    body {
       text-align: center;
     }
     textarea, div {
@@ -47,11 +68,17 @@
     }
     #options {
       width: 600px;
-      margin: auto;
-      margin-top: 10px;
+      text-align: left;
     }
     #options ul {
       list-style-type: none;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      width: 600px;
+      padding-left: 0;
+    }
+    #json div {
+      width: 600px;
       text-align: left;
     }
   </style>
@@ -67,7 +94,14 @@
           <li><input type="radio" ng-model="headerSelector" value="thead td">thead td</li>
           <li><input type="radio" ng-model="headerSelector" value="th">th</li>
           <li><input type="radio" ng-model="headerSelector" ng-value="customHeaderSelector">custom selector: <input type="text" ng-model="customHeaderSelector"></li>
+        </ul>
+      </form>
+      <span>Indentation: </span>
+      <form>
         <ul>
+          <li><input type="radio" ng-model="indent" ng-value="true">Indent the JSON</li>
+          <li><input type="radio" ng-model="indent" ng-value="false">Don't indent the JSON</li>
+        </ul>
       </form>
     </div>
     <div>
@@ -78,9 +112,9 @@
       <h1>The rendered table looks like this</h1>
       <div ng-bind-html="html"></div>
     </div>
-    <div>
+    <div id="json">
       <h1>The JSON for the table looks like this</h1>
-      <div>{{ json }}</div>
+      <div ng-bind-html="json"></div>
     </div>
   </div>
 </body>
